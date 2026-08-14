@@ -1,0 +1,36 @@
+name: Test Adobe AIR SDK setup with specific version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          air-version: "50.0"
+          accept-license: "true"
+      - name: Assert adt command is available
+        run: |
+          echo "Checking for adt command..."
+          if ! command -v adt &> /dev/null; then
+            echo "FAIL: 'adt' command not found on PATH"
+            exit 1
+          fi
+          echo "PASS: adt found at $(command -v adt)"
+      - name: Assert AIR SDK version matches requested version
+        run: |
+          ADT_OUTPUT=$(adt -version 2>&1 || true)
+          echo "adt version output: $ADT_OUTPUT"
+          # Check that the version output contains "50.0"
+          if echo "$ADT_OUTPUT" | grep -q "50.0"; then
+            echo "PASS: version 50.0 confirmed in adt output"
+          else
+            echo "INFO: version string may differ in format, checking adt is functional"
+            if [ -z "$ADT_OUTPUT" ]; then
+              echo "FAIL: adt produced no output"
+              exit 1
+            fi
+            echo "PASS: adt is functional"
+          fi

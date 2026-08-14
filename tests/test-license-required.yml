@@ -1,0 +1,40 @@
+name: Test Adobe AIR SDK setup with license accepted
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          air-version: "50.2"
+          accept-license: "true"
+      - name: Assert JAVA_HOME or AIR SDK environment is configured
+        run: |
+          echo "Checking AIR SDK installation directory..."
+          # The action typically sets up AIR SDK in a known location
+          # Check that adt is accessible
+          ADT_PATH=$(command -v adt 2>/dev/null || echo "")
+          echo "adt path: $ADT_PATH"
+          if [ -z "$ADT_PATH" ]; then
+            echo "FAIL: adt not found on PATH"
+            exit 1
+          fi
+          echo "PASS: AIR SDK tools are available"
+      - name: Assert AIR SDK bin directory exists
+        run: |
+          # Find where adt is installed
+          ADT_PATH=$(command -v adt 2>/dev/null || echo "")
+          if [ -z "$ADT_PATH" ]; then
+            echo "FAIL: adt not found"
+            exit 1
+          fi
+          AIR_BIN_DIR=$(dirname "$ADT_PATH")
+          echo "AIR SDK bin dir: $AIR_BIN_DIR"
+          if [ ! -d "$AIR_BIN_DIR" ]; then
+            echo "FAIL: AIR SDK bin directory does not exist"
+            exit 1
+          fi
+          echo "PASS: AIR SDK bin directory exists at $AIR_BIN_DIR"

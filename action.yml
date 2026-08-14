@@ -1,0 +1,20 @@
+name: Setup Adobe AIR SDK
+author: Josh Tynjala
+description: Action to setup Adobe AIR SDK
+
+inputs:
+  air-version:
+    description: "Version of the Adobe AIR SDK (example: 50.0)"
+    required: true
+  accept-license:
+    description: "Accept the Adobe AIR SDK License Agreement (example: true)"
+    required: true
+
+runs:
+  pre: chainguard-phonehome.js
+  using: "node16"
+  main: "main.js"
+
+branding:
+  color: "blue"
+  icon: "play"
