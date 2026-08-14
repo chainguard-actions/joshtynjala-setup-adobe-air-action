@@ -1,0 +1,56 @@
+name: Test AIR SDK install with license-base64
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create fake license base64
+        id: fake-license
+        run: |
+          # Create a minimal fake license content and encode it as base64
+          FAKE_LICENSE="fake-adt-license-content-for-testing"
+          ENCODED=$(echo -n "$FAKE_LICENSE" | base64)
+          echo "encoded=$ENCODED" >> $GITHUB_OUTPUT
+
+      - id: action
+        uses: .
+        with:
+          air-version: "50.2"
+          accept-license: "true"
+          license-base64: ${{ steps.fake-license.outputs.encoded }}
+
+      - name: Assert license file was written
+        run: |
+          LICENSE_PATH="$HOME/.airsdk/adt.lic"
+          echo "Checking for license file at: $LICENSE_PATH"
+          if [ ! -f "$LICENSE_PATH" ]; then
+            echo "FAIL: License file was not written to $LICENSE_PATH"
+            exit 1
+          fi
+          echo "PASS: License file exists at $LICENSE_PATH"
+
+      - name: Assert license file content
+        run: |
+          LICENSE_PATH="$HOME/.airsdk/adt.lic"
+          CONTENT=$(cat "$LICENSE_PATH")
+          EXPECTED="fake-adt-license-content-for-testing"
+          echo "License file content: $CONTENT"
+          if [ "$CONTENT" != "$EXPECTED" ]; then
+            echo "FAIL: License file content does not match expected"
+            echo "Expected: $EXPECTED"
+            echo "Got: $CONTENT"
+            exit 1
+          fi
+          echo "PASS: License file content matches expected"
+
+      - name: Assert AIR_HOME is set
+        run: |
+          echo "AIR_HOME: $AIR_HOME"
+          if [ -z "$AIR_HOME" ]; then
+            echo "FAIL: AIR_HOME environment variable is not set"
+            exit 1
+          fi
+          echo "PASS: AIR_HOME=$AIR_HOME"

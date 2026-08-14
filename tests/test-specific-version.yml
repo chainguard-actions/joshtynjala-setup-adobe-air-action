@@ -1,0 +1,31 @@
+name: Test specific AIR SDK version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup-air
+        uses: .
+        with:
+          air-version: "50.0"
+          accept-license: "true"
+      - name: Assert adt is available
+        run: |
+          echo "Checking for adt on PATH..."
+          if ! command -v adt &> /dev/null; then
+            echo "FAIL: adt command not found on PATH"
+            exit 1
+          fi
+          echo "PASS: adt found at $(command -v adt)"
+      - name: Assert AIR SDK version contains 50.0
+        run: |
+          ADT_VERSION=$(adt -version 2>&1 || true)
+          echo "adt version output: $ADT_VERSION"
+          if echo "$ADT_VERSION" | grep -q "50.0"; then
+            echo "PASS: version output contains 50.0"
+          else
+            echo "FAIL: version output does not contain 50.0"
+            exit 1
+          fi

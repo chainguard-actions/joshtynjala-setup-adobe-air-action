@@ -1,0 +1,31 @@
+name: Test basic Adobe AIR SDK setup
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup-air
+        uses: .
+        with:
+          air-version: "50.2"
+          accept-license: "true"
+      - name: Assert AIR SDK is on PATH
+        run: |
+          echo "Checking for adt on PATH..."
+          if ! command -v adt &> /dev/null; then
+            echo "FAIL: adt command not found on PATH"
+            exit 1
+          fi
+          echo "PASS: adt found at $(command -v adt)"
+      - name: Assert AIR SDK version
+        run: |
+          echo "Checking AIR SDK version..."
+          ADT_VERSION=$(adt -version 2>&1 || true)
+          echo "adt version output: $ADT_VERSION"
+          if [ -z "$ADT_VERSION" ]; then
+            echo "FAIL: adt -version returned empty output"
+            exit 1
+          fi
+          echo "PASS: adt version output is non-empty"

@@ -1,0 +1,37 @@
+name: Test AIR_HOME environment variable
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup-air
+        uses: .
+        with:
+          air-version: "50.2"
+          accept-license: "true"
+      - name: Assert AIR_HOME is set
+        run: |
+          echo "AIR_HOME: $AIR_HOME"
+          if [ -z "$AIR_HOME" ]; then
+            echo "FAIL: AIR_HOME environment variable is not set"
+            exit 1
+          fi
+          echo "PASS: AIR_HOME is set to $AIR_HOME"
+      - name: Assert AIR_HOME directory exists
+        run: |
+          echo "Checking AIR_HOME directory: $AIR_HOME"
+          if [ ! -d "$AIR_HOME" ]; then
+            echo "FAIL: AIR_HOME directory does not exist: $AIR_HOME"
+            exit 1
+          fi
+          echo "PASS: AIR_HOME directory exists"
+      - name: Assert AIR SDK bin directory exists
+        run: |
+          echo "Checking AIR SDK bin directory: $AIR_HOME/bin"
+          if [ ! -d "$AIR_HOME/bin" ]; then
+            echo "FAIL: AIR SDK bin directory does not exist: $AIR_HOME/bin"
+            exit 1
+          fi
+          echo "PASS: AIR SDK bin directory exists"
