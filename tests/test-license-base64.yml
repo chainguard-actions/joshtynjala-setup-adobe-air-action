@@ -1,0 +1,45 @@
+name: Test license-base64 input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Prepare a fake base64 license
+        id: prep
+        run: |
+          # Create a fake license content and encode it as base64
+          FAKE_LICENSE="fake-license-content-for-testing"
+          ENCODED=$(echo -n "$FAKE_LICENSE" | base64)
+          echo "encoded=$ENCODED" >> "$GITHUB_OUTPUT"
+      - id: action
+        uses: .
+        with:
+          air-version: "50.0"
+          accept-license: "true"
+          license-base64: ${{ steps.prep.outputs.encoded }}
+      - name: Assert AIR_HOME is set
+        run: |
+          echo "AIR_HOME: $AIR_HOME"
+          if [ -z "$AIR_HOME" ]; then
+            echo "FAIL: AIR_HOME environment variable is not set"
+            exit 1
+          fi
+          echo "PASS: AIR_HOME=$AIR_HOME"
+      - name: Assert license file was written
+        run: |
+          LICENSE_PATH="$HOME/.airsdk/adt.lic"
+          echo "Checking for license file at: $LICENSE_PATH"
+          if [ ! -f "$LICENSE_PATH" ]; then
+            echo "FAIL: license file was not written to $LICENSE_PATH"
+            exit 1
+          fi
+          echo "PASS: license file exists at $LICENSE_PATH"
+          CONTENT=$(cat "$LICENSE_PATH")
+          echo "License content: $CONTENT"
+          if [ "$CONTENT" != "fake-license-content-for-testing" ]; then
+            echo "FAIL: license file content does not match expected value"
+            exit 1
+          fi
+          echo "PASS: license file content matches"
