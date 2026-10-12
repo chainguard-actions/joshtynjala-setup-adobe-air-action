@@ -1,0 +1,30 @@
+{
+  "name": "setup-adobe-air",
+  "version": "2.4.0",
+  "private": true,
+  "description": "setup Adobe AIR SDK action",
+  "type": "module",
+  "main": "main.mjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshtynjala/setup-adobe-air-action.git"
+  },
+  "author": {
+    "name": "Josh Tynjala",
+    "url": "https://feathersui.com/"
+  },
+  "keywords": [
+    "actions",
+    "Adobe AIR",
+    "setup"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/tool-cache": "^4.0.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2"
+  }
+}

@@ -1,16 +1,47 @@
-# joshtynjala/setup-adobe-air-action
+# Github Action to setup the Adobe AIR SDK
 
-Action to setup Adobe AIR SDK
+This action downloads the [Adobe AIR SDK by Wipro (formerly HARMAN)](https://airsdk.wxlift.com/), adds the SDK's _bin_ folder to the `PATH`, and sets the `AIR_HOME` environment variable.
 
-Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/joshtynjala/setup-adobe-air-action](https://github.com/joshtynjala/setup-adobe-air-action).
+**Note:** Purchasing a [commercial license](https://airsdk.wxlift.com/pricing) is required to unlock certain new, restricted features of the Adobe AIR SDK by Wipro. However, "compiling SWFs and using other utilities such as the ATF tools remain a free activity."
 
-## Versions
+## Inputs
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v2.0.0 | [`v2.0.0`](https://github.com/chainguard-actions/joshtynjala-setup-adobe-air-action/tree/v2.0.0) | [`076800c`](https://github.com/joshtynjala/setup-adobe-air-action/commit/076800c1a558e82fcd28ea5af59db39dceac0d6d) |
-| v2.1.0 | [`v2.1.0`](https://github.com/chainguard-actions/joshtynjala-setup-adobe-air-action/tree/v2.1.0) | [`87d0238`](https://github.com/joshtynjala/setup-adobe-air-action/commit/87d02385dcdda248ba220ce4731d4f29db1375ef) |
-| v2.2.0 | [`v2.2.0`](https://github.com/chainguard-actions/joshtynjala-setup-adobe-air-action/tree/v2.2.0) | [`da6e2ae`](https://github.com/joshtynjala/setup-adobe-air-action/commit/da6e2ae99c6a2dfae86e93893628925f87d3471a) |
+### `air-version`
+
+_(Required)_ The version of the Adobe AIR SDK to set up. An exact version, such as `50.0.1.1`, is recommended. However, a less specific version, like `50.0` or `50`, is allowed.
+
+### `accept-license`
+
+_(Required)_ Set to `true` if you accept the [Adobe AIR SDK License Agreement](https://airsdk.wxlift.com/assets/pdfs/HARMAN%20AIR%20SDK%20License%20Agreement.pdf). The action will fail if the agreement is not accepted.
+
+### `license-base64`
+
+_(Optional)_ Use with an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) to optionally provide a valid _adt.lic_ file, [encoded as a Base64 string](https://docs.github.com/en/actions/security-guides/encrypted-secrets#storing-base64-binary-blobs-as-secrets), to unlock new, restricted features.
+
+**Warning!** Never include the raw Base64-encoded string value directly in your Github Actions _.yml_ file. You **must** use an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) to prevent your license file from being leaked publicly.
+
+## Example usage
+
+Use the AIR SDK by Wipro for free activities:
+
+```yml
+uses: joshtynjala/setup-adobe-air-action@v2
+with:
+  air-version: "50.0.1.1"
+  accept-license: true
+```
+
+Specify an encypted secret containing a Base64-encoded license file to unlock new, restricted features:
+
+```yml
+uses: joshtynjala/setup-adobe-air-action@v2
+with:
+  air-version: "50.0.1.1"
+  accept-license: true
+  license-base64: ${{ secrets.AIR_SDK_LICENSE_FILE }}
+```
+
+
 
 ## Privacy
 
